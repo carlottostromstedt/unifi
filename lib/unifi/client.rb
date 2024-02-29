@@ -21,7 +21,6 @@ module Unifi
       @site = options[:site] || ENV['UNIFI_SITE'] || 'default'
       @username = options[:username] || ENV['UNIFI_USERNAME']
       @password = options[:password] || ENV['UNIFI_PASSWORD']
-      p self.class.base_uri
       self.class.default_options.merge!(headers: { 'Content-Type': 'application/json',
                                                    'Accept': 'application/json' },
                                         verify: false)
@@ -31,8 +30,7 @@ module Unifi
 
     def login
       response = self.class.post('/login',
-                                 body: "{'username': '#{@username}', 'password': '#{@password}'}")
-      p response
+                                  body: { username: @username, password: @password }.to_json)
       @cookies = response.headers['set-cookie']
     end
 
