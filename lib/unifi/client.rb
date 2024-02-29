@@ -1,12 +1,11 @@
 # ./lib/unifi/client.rb
-require "unifi/client/vouchers"
-require "unifi/client/sites"
-require "unifi/client/guests"
-require "unifi/client/wlan"
-require "unifi/client/main"
+require 'unifi/client/vouchers'
+require 'unifi/client/sites'
+require 'unifi/client/guests'
+require 'unifi/client/wlan'
+require 'unifi/client/main'
 
 module Unifi
-
   class Client
     include HTTParty
     include Unifi::Client::Vouchers
@@ -17,29 +16,29 @@ module Unifi
 
     format :json
     def initialize(options = {})
-      options[:url] ||= ENV["UNIFI_URL"]
+      options[:url] ||= ENV['UNIFI_URL']
       self.class.base_uri "https://#{options[:url]}/api"
-      @site = options[:site] || ENV["UNIFI_SITE"] || "default"
-      @username = options[:username] || ENV["UNIFI_USERNAME"]
-      @password = options[:password] || ENV["UNIFI_PASSWORD"]
+      @site = options[:site] || ENV['UNIFI_SITE'] || 'default'
+      @username = options[:username] || ENV['UNIFI_USERNAME']
+      @password = options[:password] || ENV['UNIFI_PASSWORD']
+      p self.class.base_uri
       self.class.default_options.merge!(headers: { 'Content-Type': 'application/json',
                                                    'Accept': 'application/json' },
                                         verify: false)
       login
-      self.class.default_options.merge!(headers: { 'Cookie': @cookies } )
+      self.class.default_options.merge!(headers: { 'Cookie': @cookies })
     end
 
     def login
-      response = self.class.post("/login",
+      response = self.class.post('/login',
                                  body: "{'username': '#{@username}', 'password': '#{@password}'}")
+      p response
       @cookies = response.headers['set-cookie']
     end
 
     def logout
-      self.class.get("/logout")
+      self.class.get('/logout')
       @cookies = ''
     end
-
   end
-
 end
