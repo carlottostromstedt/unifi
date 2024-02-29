@@ -8,7 +8,6 @@ require 'unifi/client/main'
 module Unifi
   class Client
     include HTTParty
-    debug_output $stdout
     include Unifi::Client::Vouchers
     include Unifi::Client::Sites
     include Unifi::Client::Guests
