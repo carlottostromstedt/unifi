@@ -8,6 +8,7 @@ require 'unifi/client/main'
 module Unifi
   class Client
     include HTTParty
+    debug_output $stdout
     include Unifi::Client::Vouchers
     include Unifi::Client::Sites
     include Unifi::Client::Guests
@@ -18,6 +19,7 @@ module Unifi
     def initialize(options = {})
       @url = options[:url] || ENV['UNIFI_URL']
       @port = options[:port] || ENV['UNIFI_PORT'] 
+      @udm = options [:udm] || ENV['UNIFI_UDM'] || false
       self.class.base_uri "https://#{@url}:#{@port}/api"
       @site = options[:site] || ENV['UNIFI_SITE'] || 'default'
       @username = options[:username] || ENV['UNIFI_USERNAME']

@@ -18,8 +18,15 @@ module Unifi
         response.parsed_response
       end
 
-      def list_devices(mac = '', site: @site)
-        response = self.class.get("/s/#{site}/stat/device/#{mac.delete(" :")}")
+      def list_devices(mac = '', site: @site, udm: @udm)
+        response = if udm
+          self.class.get("/s/#{site}/stat/device/#{mac.delete(' :')}")
+        elsif mac.is_a?(Array)
+          self.class.post("/s/#{site}/stat/device/",
+                          body: { macs: mac }.to_json)
+        else
+          self.class.get("/s/#{site}/stat/device")
+        end
         response.parsed_response
       end
 
