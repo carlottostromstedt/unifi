@@ -17,7 +17,7 @@ module Unifi
     format :json
     def initialize(options = {})
       @url = options[:url] || ENV['UNIFI_URL']
-      @port = options[:port] || ENV['UNIFI_PORT'] || 443
+      @port = options[:port] || ENV['UNIFI_PORT'] 
       self.class.base_uri "https://#{@url}:#{@port}/api"
       @site = options[:site] || ENV['UNIFI_SITE'] || 'default'
       @username = options[:username] || ENV['UNIFI_USERNAME']
