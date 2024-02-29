@@ -4,7 +4,7 @@ module Unifi
 
     module Vouchers
 
-      def create_voucher(options = {})
+      def create_voucher(options = {}, site = @site)
         body = { cmd: 'create-voucher',
                  expire: options[:expire] ||= 120,
                  n: options[:amount] ||= 1,
@@ -13,21 +13,21 @@ module Unifi
         body[:up] = options[:up] if options[:up]
         body[:down] = options[:down] if options[:down]
         body[:bytes] = options[:bytes] if options[:bytes]
-        response = self.class.post("/s/#{@site}/cmd/hotspot",
+        response = self.class.post("/s/#{site}/cmd/hotspot",
                                    { body: body.to_json } )
         response.parsed_response
       end
 
-      def stat_voucher(create_time = nill)
+      def stat_voucher(create_time = nill, site = @site)
         body = { create_time: create_time }
-        response = self.class.get("/s/#{@site}/stat/voucher",
+        response = self.class.get("/s/#{site}/stat/voucher",
                                    { body: body.to_json })
         response.parsed_response
       end
 
-      def revoke_voucher(voucher_id = nill)
+      def revoke_voucher(voucher_id = nill, site = @site)
         body = { cmd: 'delete-voucher', _id: voucher_id }
-        response = self.class.post("/s/#{@site}/cmd/hotspot",
+        response = self.class.post("/s/#{site}/cmd/hotspot",
                                    { body: body.to_json } )
         response.parsed_response
       end

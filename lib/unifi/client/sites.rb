@@ -4,16 +4,16 @@ module Unifi
 
     module Sites
 
-      def add_site(description)
+      def add_site(description, site = @site)
         body = { cmd: 'add-site', desc: description }
-        response = self.class.post("/s/#{@site}/cmd/sitemgr", { body: body.to_json })
+        response = self.class.post("/s/#{site}/cmd/sitemgr", { body: body.to_json })
         response.parsed_response
       end
 
 
-      def delete_site(site_id)
+      def delete_site(site_id, site = @site)
         body = { site: site_id, cmd: 'delete-site' }
-        response = self.class.post("/s/#{@site}/cmd/sitemgr", { body: body.to_json })
+        response = self.class.post("/s/#{site}/cmd/sitemgr", { body: body.to_json })
         response.parsed_response
       end
 
@@ -27,8 +27,8 @@ module Unifi
         response.parsed_response
       end
 
-      def stat_sysinfo
-        response = self.class.get("/s/#{@site}/stat/sysinfo")
+      def stat_sysinfo(site = @site)
+        response = self.class.get("/s/#{site}/stat/sysinfo")
         response.parsed_response
       end
 

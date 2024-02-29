@@ -4,9 +4,9 @@ module Unifi
 
     module Wlan
 
-      def delete_wlan(wlan_id)
+      def delete_wlan(wlan_id, site = @site)
         body = {}
-        response = self.class.post("/s/#{@site}/del/wlanconf/#{wlan_id}", { body: body.to_json })
+        response = self.class.post("/s/#{site}/del/wlanconf/#{wlan_id}", { body: body.to_json })
         response.parsed_response
       end
 
@@ -24,7 +24,7 @@ module Unifi
                       vlan = null,
                       uapsd_enabled = false,
                       schedule_enabled = false,
-                      schedule = [])
+                      schedule = [], site = @site)
         body = { name: name,
                  x_passphrase: x_passphrase,
                  usergroup_id: usergroup_id,
@@ -40,25 +40,25 @@ module Unifi
                  schedule_enabled: schedule_enabled,
                  schedule: schedule }
         body[:vlan] = vlan if vlan && vlan_enabled
-        response = self.class.get("/s/#{@site}/add/wlanconf", { body: body.to_json })
+        response = self.class.get("/s/#{site}/add/wlanconf", { body: body.to_json })
         response.parsed_response
       end
 
-      def set_wlansettings(wlan_id, x_passphrase, name = '')
+      def set_wlansettings(wlan_id, x_passphrase, name = '', site = @site)
         body = {}
         body[:x_passphrase] = x_passphrase if x_passphrase
         body[:name] = name if name
-        response = self.class.get("/s/#{@site}/upd/wlanconf/#{wlan_id}", { body: body.to_json })
+        response = self.class.get("/s/#{site}/upd/wlanconf/#{wlan_id}", { body: body.to_json })
         response.parsed_response
       end
 
-      def list_wlan_groups
-        response = self.class.get("/s/#{@site}/list/wlangroup")
+      def list_wlan_groups(site = @site)
+        response = self.class.get("/s/#{site}/list/wlangroup")
         response.parsed_response
       end
 
-      def list_wlanconf
-        response = self.class.get("/s/#{@site}/list/wlanconf")
+      def list_wlanconf(site = @site)
+        response = self.class.get("/s/#{site}/list/wlanconf")
         response.parsed_response
       end
       
