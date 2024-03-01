@@ -2,31 +2,35 @@
 module Unifi
   class Client
     module Main
-
       def list_dashboard(site: @site)
         response = self.class.get("/s/#{site}/stat/dashboard")
         response.parsed_response
       end
 
       def list_clients(mac = '', site: @site)
-        response = self.class.get("/s/#{site}/stat/sta/#{mac.delete(" :")}")
+        response = self.class.get("/s/#{site}/stat/sta/#{mac.delete(' :')}")
         response.parsed_response
       end
 
       def stat_client(mac = '', site: @site)
-        response = self.class.get("/s/#{site}/stat/user/#{mac.delete(" :")}")
+        response = self.class.get("/s/#{site}/stat/user/#{mac.delete(' :')}")
         response.parsed_response
       end
 
       def list_devices(mac = '', site: @site, udm: @udm)
         response = if udm
-          self.class.get("/s/#{site}/stat/device/#{mac.delete(' :')}")
-        elsif mac.is_a?(Array)
-          self.class.post("/s/#{site}/stat/device/",
-                          body: { macs: mac }.to_json)
-        else
-          self.class.get("/s/#{site}/stat/device")
-        end
+                     self.class.get("/s/#{site}/stat/device/#{mac.delete(' :')}")
+                   elsif mac.is_a?(Array)
+                     self.class.post("/s/#{site}/stat/device/",
+                                     body: { macs: mac }.to_json)
+                   else
+                     self.class.get("/s/#{site}/stat/device")
+                   end
+        response.parsed_response
+      end
+
+      def list_updates(id, site: @site)
+        response = self.class.put("/s/#{site}/rest/device/#{id}")
         response.parsed_response
       end
 
@@ -36,7 +40,7 @@ module Unifi
       end
 
       def list_events(options = {}, site: @site)
-        body = { _sort: '-time', }
+        body = { _sort: '-time' }
         body[:within] = options[:historyhours] || 720
         body[:_start] = options[:start] || 0
         body[:_limit] = options[:limit] || 3000
@@ -118,7 +122,7 @@ module Unifi
 
       def rename_ap(ap_id, apname, site: @site)
         body = { name: apname }
-        response = self.class.get("/s/#{site}/upd/device/#{ap_id.delete(" ")}", { body: body.to_json })
+        response = self.class.get("/s/#{site}/upd/device/#{ap_id.delete(' ')}", { body: body.to_json })
         response.parsed_response
       end
 
@@ -135,67 +139,67 @@ module Unifi
       end
 
       def stat_sessions(start_time = nil, end_time = Time.now.to_i, mac = nil, site: @site)
-        body = { start: start_time ? start_time : end_time - (7 * 24 * 3600), end: end_time, type: 'all' }
+        body = { start: start_time || end_time - (7 * 24 * 3600), end: end_time, type: 'all' }
         body[:mac] = mac if mac
         response = self.class.get("/s/#{site}/stat/session", { body: body.to_json })
         response.parsed_response
       end
 
       def stat_payment(within = nil, site: @site)
-        response = self.class.get("/s/#{site}/stat/payment#{within ? "?within=#{within}" : '' }")
+        response = self.class.get("/s/#{site}/stat/payment#{within ? "?within=#{within}" : ''}")
         response.parsed_response
       end
 
       def stat_hourly_site(start_time = nil, end_time = Time.now.to_i * 1000, site: @site)
-        body = { start: start_time ? start_time : end_time - (7 * 24 * 3600 * 1000),
+        body = { start: start_time || end_time - (7 * 24 * 3600 * 1000),
                  end: end_time,
-                 attributes: ['bytes',
-                              'wan-tx_bytes',
-                              'wan-rx_bytes', 'wlan_bytes', 'num_sta', 'lan-num_sta', 'wlan-num_sta', 'time'] }
+                 attributes: %w[bytes
+                                wan-tx_bytes
+                                wan-rx_bytes wlan_bytes num_sta lan-num_sta wlan-num_sta time] }
         response = self.class.get("/s/#{site}/stat/report/hourly.site", { body: body.to_json })
         response.parsed_response
       end
 
       def stat_hourly_aps(start_time = nil, end_time = Time.now.to_i * 1000, site: @site)
-        body = { start: start_time ? start_time : end_time - (7 * 24 * 3600 * 1000),
+        body = { start: start_time || end_time - (7 * 24 * 3600 * 1000),
                  end: end_time,
-                 attrs: ['bytes', 'num_sta', 'time'] }
+                 attrs: %w[bytes num_sta time] }
         response = self.class.get("/s/#{site}/stat/report/hourly.ap", { body: body.to_json })
         response.parsed_response
       end
 
       def stat_daily_aps(start_time = nil, end_time = Time.now.to_i * 1000, site: @site)
-        body = { start: start_time ? start_time : end_time - (7 * 24 * 3600 * 1000),
+        body = { start: start_time || end_time - (7 * 24 * 3600 * 1000),
                  end: end_time,
-                 attrs: ['bytes', 'num_sta', 'time'] }
+                 attrs: %w[bytes num_sta time] }
         response = self.class.get("/s/#{site}/stat/report/daily.ap", { body: body.to_json })
         response.parsed_response
       end
 
       def stat_daily_site(start_time = nil, end_time = Time.now.to_i - (Time.now.to_i % 3600) * 1000, site: @site)
-        body = { start: start_time ? start_time : end_time - (52 * 7 * 24 * 3600 * 1000),
+        body = { start: start_time || end_time - (52 * 7 * 24 * 3600 * 1000),
                  end: end_time,
-                 attributes: ['bytes',
-                              'wan-tx_bytes',
-                              'wan-rx_bytes',
-                              'wlan_bytes',
-                              'num_sta',
-                              'lan-num_sta',
-                              'wlan-num_sta',
-                              'time'] }
+                 attributes: %w[bytes
+                                wan-tx_bytes
+                                wan-rx_bytes
+                                wlan_bytes
+                                num_sta
+                                lan-num_sta
+                                wlan-num_sta
+                                time] }
         response = self.class.get("/s/#{site}/stat/report/daily.site", { body: body.to_json })
         response.parsed_response
       end
 
       def stat_auths(start_time = nil, end_time = Time.now.to_i, site: @site)
-        body = { start: start_time ? start_time : end_time - (7 * 24 * 3600),
+        body = { start: start_time || end_time - (7 * 24 * 3600),
                  end: end_time }
         response = self.class.get("/s/#{site}/stat/authorization", { body: body.to_json })
         response.parsed_response
       end
 
       def stat_allusers(historyhours = 8760, site: @site)
-        body = { type: 'all', conn: 'all', within: historyhours}
+        body = { type: 'all', conn: 'all', within: historyhours }
         response = self.class.get("/s/#{site}/stat/alluser", { body: body.to_json })
         response.parsed_response
       end
@@ -275,7 +279,7 @@ module Unifi
         response.parsed_response
       end
 
-      def set_ap_radiosettings(ap_id, radio, channel, ht, tx_power_mode, tx_power, site: @site)
+      def set_ap_radiosettings(_ap_id, radio, channel, ht, tx_power_mode, tx_power, site: @site)
         body = { radio_table: { radio: radio,
                                 channel: channel,
                                 ht: ht,
@@ -301,7 +305,7 @@ module Unifi
 
       def led_override(device_id, override_mode, site: @site)
         body = { led_override: override_mode }
-        if ['off', 'on', 'default'].include?(override_mode)
+        if %w[off on default].include?(override_mode)
           response = self.class.put("/s/#{site}/rest/device/#{device_id}", { body: body.to_json })
           response.parsed_response
         else
@@ -314,7 +318,7 @@ module Unifi
         response = self.class.put("/s/#{site}/rest/device/#{ap_id}", { body: body.to_json })
         response.parsed_response
       end
-      
+
       def create_hotspotop(name, x_password, note = '', site: @site)
         body = { name: name, x_password: x_password }
         body[:note] = note if note
