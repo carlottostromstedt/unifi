@@ -29,10 +29,10 @@ module Unifi
         response.parsed_response
       end
 
-      def list_devices_v2(site: @site){
+      def list_devices_v2(site: @site)
         response = self.class.get("v2/api/site/#{site}/device")
         response.parsed_response
-      }
+      end
 
       def list_updates(id, site: @site)
         response = self.class.put("/s/#{site}/rest/device/#{id}")
