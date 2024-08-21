@@ -30,8 +30,8 @@ module Unifi
       end
 
       def list_devices_v2(site: @site)
-        self.class.base_uri = "https://#{@url}:#{@port}/v2/api"
-        response = self.class.get("/site/#{site}/device")
+        base_uri = "https://#{@url}:#{@port}/v2/api"
+        response = self.class.get("/site/#{site}/device", base_uri: base_uri)
         response.parsed_response
       end
 
