@@ -228,8 +228,8 @@ module Unifi
       end
 
       def upgrade_device(mac, site: @site)
-        body = { mac: mac }
-        response = self.class.get("/s/#{site}/cmd/devmgr/upgrade", { body: body.to_json })
+        body = { cmd: 'upgrade', mac: mac }
+        response = self.class.post("/s/#{site}/cmd/devmgr", { body: body.to_json })
         response.parsed_response
       end
 
